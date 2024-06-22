@@ -16,12 +16,12 @@ using std::cin;
 using std::vector;
 
 //TODO
-// 1. Random
+// 1. Random [done!]
 // 2. Menu
 // 3. Numeric sigm
 // 4. Strategy 
 // 5. Bridge Logger
-
+// 6. Clean code
 
 class NetWork
 {
@@ -60,10 +60,12 @@ public:
 
 	~NetWork();
 	
+	double getRandom() const;
+	
 
 	NetWork& operator=(const NetWork& another) = delete;
 
-	bool haveData() { return HaveData; }
+	bool haveData() const { return HaveData; }
 
 	void ReadFromFile(const std::string& filename);
 

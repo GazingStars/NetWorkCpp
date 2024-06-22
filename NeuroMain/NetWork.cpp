@@ -28,7 +28,7 @@ NetWork::NetWork(const int layers, int* size, const int threadsNum, const std::s
 					weight[i][j] = new double[size[i + 1]];
 					for (int k = 0; k < size[i + 1]; k++)
 					{
-						weight[i][j][k] = ((rand() % 100) * 0.01 / this->size[i]);
+						weight[i][j][k] = getRandom();
 					}
 				}
 			}
@@ -79,7 +79,7 @@ NetWork::NetWork(std::initializer_list<int> iL, const int threadsNum, const std:
 					weight[i][j] = new double[*nextIt];
 					for (int k = 0; k < *nextIt; k++)
 					{
-						weight[i][j][k] = ((rand() % 100) * 0.01 / this->size[i]);
+						weight[i][j][k] = getRandom();
 					}
 				}
 			}
@@ -130,7 +130,7 @@ NetWork::NetWork(std::vector<int>& vica, const int threadsNum, const std::string
 					weight[i][j] = new double[vica[i + 1]];
 					for (int k = 0; k < vica[i + 1]; k++)
 					{
-						weight[i][j][k] = ((rand() % 100) * 0.01 / this->size[i]);
+						weight[i][j][k] = getRandom();
 					}
 				}
 			}
@@ -195,6 +195,15 @@ NetWork::~NetWork()
 	{
 		delete[] this->size;
 	}
+}
+
+double NetWork::getRandom() const
+{
+	std::random_device rd; // SetTheSeed
+	std::mt19937 gen(rd);  // Mersenne Twister by Matsumoto and Nishimura
+	std::uniform_real_distribution<> dis(0.0, 1.0); //values distributed across a range
+
+	return dis(gen);
 }
 
 void NetWork::ReadFromFile(const std::string& filename)
@@ -365,7 +374,7 @@ void NetWork::setLayer(int LayerNum, int* NeuroNum)
 				weight[i][j] = new double[NeuroNum[i + 1]];
 				for (int k = 0; k < NeuroNum[i + 1]; k++)
 				{
-					weight[i][j][k] = ((rand() % 100) * 0.01 / size[i]);
+					weight[i][j][k] = getRandom();
 				}
 			}
 		}
