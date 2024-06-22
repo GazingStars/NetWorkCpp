@@ -2,7 +2,6 @@
 
 NetWork::NetWork(const int layers, int* size, const int threadsNum, const std::string& FILE)
 {
-	//Доделать для всех конструкторов
 	if (FILE.empty())
 	{
 
@@ -200,8 +199,8 @@ NetWork::~NetWork()
 double NetWork::getRandom() const
 {
 	std::random_device rd; // SetTheSeed
-	std::mt19937 gen(rd);  // Mersenne Twister by Matsumoto and Nishimura
-	std::uniform_real_distribution<> dis(0.0, 1.0); //values distributed across a range
+	std::mt19937 gen(rd());  // Mersenne Twister by Matsumoto and Nishimura
+	std::uniform_real_distribution<> dis(-1.0, 1.0); //values distributed across a range
 
 	return dis(gen);
 }
@@ -309,7 +308,7 @@ void NetWork::Educate(const int DataAmmount, const std::string& FileEducateData,
 void NetWork::Test(const std::string& FileTestData)
 {
 	double result;
-	fin.open("testI.txt");
+	fin.open(FileTestData);
 	if (fin.is_open())
 	{
 

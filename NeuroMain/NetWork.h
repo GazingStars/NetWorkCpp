@@ -17,7 +17,7 @@ using std::vector;
 
 //TODO
 // 1. Random [done!]
-// 2. Menu
+// 2. Menu [done! ]
 // 3. Numeric sigm
 // 4. Strategy 
 // 5. Bridge Logger
