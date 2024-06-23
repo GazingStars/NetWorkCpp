@@ -18,14 +18,14 @@ using std::vector;
 //TODO
 // 1. Random [done!]
 // 2. Menu [done! ]
-// 3. Numeric sigm
+// 3. Numeric sigm [is not possible to do another way]
 // 4. Strategy 
 // 5. Bridge Logger
-// 6. Clean code
+// 6. Clean code 
 
 class NetWork
 {
-private:
+protected:
 
 	struct neuron
 	{
@@ -40,8 +40,6 @@ private:
 
 	};
 
-	ifstream fin;//убрать в метод
-	ofstream fout;//убрать в метод
 	int layers;		// Хранилище количества слоев 
 	neuron** neurons;
 	double*** weight;
@@ -62,56 +60,41 @@ public:
 	
 	double getRandom() const;
 	
-
 	NetWork& operator=(const NetWork& another) = delete;
 
 	bool haveData() const { return HaveData; }
 
 	void ReadFromFile(const std::string& filename);
 
-
 	void Educate(const int DataAmmount,const std::string& FileEducateData,const std::string& SafeFaleName);
-
 
 	void Test(const std::string& FileTestData);
 
-
-
 	// Производная сигмоидальной функции
-	double sigm_pro(double x);
+	double sigm_pro(double x) const;
 
-
-	double predict(double x);
-
+	double predict(double x) const;
 
 	void setLayer(int LayerNum, int* NeuroNum); // LayerNum - ammount of layers you wish, NeuroNum - ammount of neurons you wish
-
 
 	// Функция принимает входные данные и передает их на первые нейроны для дальнейшего анализа
 	void set_input(double* input);
 
+	void show() const;
 
-	void show();
-
-	void silentShowToFile();
+	void silentShowToFile() const;
 
 	void LayersCleaner(int LayerNumber, int start, int stop); // LayerNumber - the layer that we want to clean, start/stop - the neurons we want to clean;
 
-
 	void ForwardFeeder(int LayersNumber, int start, int stop); // LayerNumber - the layer that we want to chande value, start/stop - the neurons we want to change value
-
 
 	double ForwardFeed(); // Распределяет LayersCleaner и ForwardFeeder по потокам (в зависимости от их количества)
 
-
 	void ErrorCounter(int LayerNumber, int start, int stop, double prediction, double rresult); // TO DO
-
 
 	void WeightUpdater(int start, int stop, int LayerNum, double lr);
 
-
 	void BackPropogation(double prediction, double rresult, double Ir);
-
 
 	bool SafeWeights(const std::string& SafeFaleName);
 };

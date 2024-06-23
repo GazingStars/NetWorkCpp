@@ -4,16 +4,12 @@ NetWork::NetWork(const int layers, int* size, const int threadsNum, const std::s
 {
 	if (FILE.empty())
 	{
-
-
 		HaveData = false;
 		this->layers = layers;
 		neurons = new neuron * [this->layers]; // Установка слоя
 		this->threadsNum = threadsNum;
 		weight = new double** [this->layers - 1];
 		this->size = new int[this->layers];
-
-
 
 		for (int i = 0; i < this->layers; i++)
 		{
@@ -26,9 +22,7 @@ NetWork::NetWork(const int layers, int* size, const int threadsNum, const std::s
 				{
 					weight[i][j] = new double[size[i + 1]];
 					for (int k = 0; k < size[i + 1]; k++)
-					{
 						weight[i][j][k] = getRandom();
-					}
 				}
 			}
 		}
@@ -47,7 +41,6 @@ NetWork::NetWork(const int layers, int* size, const int threadsNum, const std::s
 			neurons[i] = new neuron[size[i]];
 		}
 		ReadFromFile(FILE);
-
 	}
 }
 
@@ -77,9 +70,7 @@ NetWork::NetWork(std::initializer_list<int> iL, const int threadsNum, const std:
 				{
 					weight[i][j] = new double[*nextIt];
 					for (int k = 0; k < *nextIt; k++)
-					{
 						weight[i][j][k] = getRandom();
-					}
 				}
 			}
 		}
@@ -99,7 +90,6 @@ NetWork::NetWork(std::initializer_list<int> iL, const int threadsNum, const std:
 			neurons[i] = new neuron[size[i]];
 		}
 		ReadFromFile(FILE);
-
 	}
 }
 
@@ -108,14 +98,11 @@ NetWork::NetWork(std::vector<int>& vica, const int threadsNum, const std::string
 	if (FILE.empty())
 	{
 		HaveData = false;
-
 		this->layers = vica.size();
 		neurons = new neuron * [this->layers]; // Установка слоя
 		this->threadsNum = threadsNum;
 		weight = new double** [this->layers - 1];
 		this->size = new int[this->layers];
-
-
 
 		for (int i = 0; i < this->layers; i++)
 		{
@@ -128,13 +115,10 @@ NetWork::NetWork(std::vector<int>& vica, const int threadsNum, const std::string
 				{
 					weight[i][j] = new double[vica[i + 1]];
 					for (int k = 0; k < vica[i + 1]; k++)
-					{
 						weight[i][j][k] = getRandom();
-					}
 				}
 			}
 		}
-
 		std::cout << "\nВсе начальные настройки установлены, но Вам нужно произвести обучение (Educate).\n";
 	}
 	else
@@ -145,55 +129,38 @@ NetWork::NetWork(std::vector<int>& vica, const int threadsNum, const std::string
 		this->size = new int[this->layers];
 		neurons = new neuron * [this->layers];
 
-
 		for (int i = 0; i < this->layers; i++)
 		{
 			this->size[i] = vica[i];
 			neurons[i] = new neuron[size[i]];
 		}
 		ReadFromFile(FILE);
-
 	}
-
-
 }
 
 NetWork::~NetWork()
 {
 	if (weight)
 	{
-
 		for (int i = 0; i < layers - 1; i++)
 		{
-
-
 			for (int j = 0; j < size[i]; j++)
-			{
-
 				delete[] weight[i][j];
-
-			}
 			delete[] weight[i];
-
 		}
-
 		delete[] weight;
 	}
 
 	if (neurons)
 	{
 		for (int i = 0; i < layers; i++)
-		{
 			delete[] neurons[i];
-		}
 		delete[] neurons;
 	}
 
-
 	if (size)
-	{
 		delete[] this->size;
-	}
+
 }
 
 double NetWork::getRandom() const
@@ -211,7 +178,6 @@ void NetWork::ReadFromFile(const std::string& filename)
 	fin.open(filename);
 	if (!filename.empty() && fin.good())
 	{
-
 		weight = new double** [layers - 1];
 		for (int i = 0; i < layers; i++)
 		{
@@ -222,23 +188,22 @@ void NetWork::ReadFromFile(const std::string& filename)
 				{
 					weight[i][j] = new double[size[i + 1]];
 					for (int k = 0; k < size[i + 1]; k++)
-					{
 						fin >> weight[i][j][k];
-					}
 				}
 			}
 		}
 		cout << "\nОшибок не обнаружено, все веса установлены корректно.\n";
 	}
 	else
-	{
 		std::cout << "\nОшибка открытия файла.\n";
-	}
-}
 
+}
 
 void NetWork::Educate(const int DataAmmount, const std::string& FileEducateData, const std::string& SafeFaleName)
 {
+	ifstream fin;
+	ofstream fout;
+
 	double ra = 0; // Right ansvers
 	char rresult;  // Right results
 	double time = 0;
@@ -261,17 +226,14 @@ void NetWork::Educate(const int DataAmmount, const std::string& FileEducateData,
 					double start = clock();
 
 					for (int j = 0; j < size[0]; j++)
-					{
 						fin >> neurons[0][j].value;
-					}
+
 					fin >> rresult;
 					double stop = clock();
 					time += stop - start;
 
 					rresult -= 65;
-
 					result = ForwardFeed();
-
 
 					if (char(result) == rresult)
 					{
@@ -279,17 +241,13 @@ void NetWork::Educate(const int DataAmmount, const std::string& FileEducateData,
 						ra++;
 					}
 					else
-					{
 						BackPropogation(result, rresult, 0.3);
-					}
-
 				}
 				fin.close();
 			}
 			else
-			{
 				std::cout << "Ошибка в открытии  файла с обучающими данными.";
-			}
+
 			double epoch_stop = clock();
 			double maxraepoch = e;
 
@@ -299,35 +257,28 @@ void NetWork::Educate(const int DataAmmount, const std::string& FileEducateData,
 		if (SafeWeights(SafeFaleName))
 			cout << "All saves is done.";
 	}
-
-
 	fin.close();
-
 }
 
 void NetWork::Test(const std::string& FileTestData)
 {
+	ifstream fin;
 	double result;
 	fin.open(FileTestData);
 	if (fin.is_open())
 	{
-
 		for (int i = 0; i < size[0]; i++)
-		{
 			fin >> neurons[0][i].value;
-		}
+
 		result = ForwardFeed();
 		cout << "I thing it's letter: " << char(result + 65) << "\n\n";
 		fin.close();
 	}
 	else
-	{
 		cout << "Mistake with file.";
-	}
-
 }
 
-double NetWork::sigm_pro(double x)
+double NetWork::sigm_pro(double x) const
 {
 	if ((fabs(x - 1) < 1e-9) || (fabs(x) < 1e-9)) // Проверка и отсечение случаев очень близкого значения к 1 или 0, (Значения, очень близкие к 0 или 1, могут из-за ошибок округления вести себя непредсказуемо)
 		return 0.0;
@@ -337,7 +288,7 @@ double NetWork::sigm_pro(double x)
 	return res;
 }
 
-double NetWork::predict(double x)
+double NetWork::predict(double x) const
 {
 	if (x >= 0.8)
 		return 1;
@@ -372,24 +323,20 @@ void NetWork::setLayer(int LayerNum, int* NeuroNum)
 			{
 				weight[i][j] = new double[NeuroNum[i + 1]];
 				for (int k = 0; k < NeuroNum[i + 1]; k++)
-				{
 					weight[i][j][k] = getRandom();
-				}
 			}
 		}
 	}
-
 }
 
 void NetWork::set_input(double* input)
 {
 	for (int i = 0; i < size[0]; i++)
-	{
 		neurons[0][i].value = input[i];
-	}
+
 }
 
-void NetWork::show()
+void NetWork::show() const
 {
 	cout << "Ядер процессора: " << thread::hardware_concurrency() << endl;
 	cout << "Нейронная сеть имеет архитектуру: ";
@@ -397,9 +344,7 @@ void NetWork::show()
 	{
 		cout << size[i];
 		if (i < layers - 1)
-		{
 			cout << " - ";
-		}
 
 	}cout << endl;
 	for (int i = 0; i < layers; i++)
@@ -423,9 +368,9 @@ void NetWork::show()
 	}
 }
 
-
-void NetWork::silentShowToFile()
+void NetWork::silentShowToFile() const
 {
+	ofstream fout;
 	fout.open("silentShowToFile.txt");
 
 	if (fout.good())
@@ -433,15 +378,11 @@ void NetWork::silentShowToFile()
 		fout << "Ядер процессора: " << thread::hardware_concurrency() << endl;
 		fout << "Нейронная сеть имеет архитектуру: ";
 
-
 		for (int i = 0; i < layers; i++)
 		{
 			fout << size[i];
 			if (i < layers - 1)
-			{
 				fout << " - ";
-			}
-
 		}fout << endl;
 		for (int i = 0; i < layers; i++)
 		{
@@ -466,13 +407,10 @@ void NetWork::silentShowToFile()
 	}
 }
 
-
 void NetWork::LayersCleaner(int LayerNumber, int start, int stop)
 {
 	for (int i = start; i < stop; i++)
-	{
 		neurons[LayerNumber][i].value = 0.1;
-	}
 }
 
 void NetWork::ForwardFeeder(int LayersNumber, int start, int stop)
@@ -480,10 +418,7 @@ void NetWork::ForwardFeeder(int LayersNumber, int start, int stop)
 	for (int i = start; i < stop; i++) // Идет по нейронам текущего слоя
 	{
 		for (int j = 0; j < size[LayersNumber - 1]; j++) // Идет по нейронам предыдущего слоя
-		{
 			neurons[LayersNumber][i].value += neurons[LayersNumber - 1][j].value * weight[LayersNumber - 1][j][i];
-
-		}
 		neurons[LayersNumber][i].act();
 	}
 }
