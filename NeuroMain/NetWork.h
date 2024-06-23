@@ -20,8 +20,8 @@ using std::vector;
 // 2. Menu [done! ]
 // 3. Numeric sigm [is not possible to do another way]
 // 4. Strategy 
-// 5. Bridge Logger
-// 6. Clean code 
+// 5. Bridge Logger 
+// 6. Clean code [done!]
 
 class NetWork
 {
@@ -32,12 +32,11 @@ protected:
 		double value;
 		double error;
 
-		// возвращает значение сигмоидальной функции //numeric посмотреть
+		// возвращает значение сигмоидальной функции //numeric посмотреть - нет
 		void act()
 		{
 			value = (1.0 / (1.0 + std::exp(-value)));
 		}
-
 	};
 
 	int layers;		// Хранилище количества слоев 
@@ -90,7 +89,7 @@ public:
 
 	double ForwardFeed(); // Распределяет LayersCleaner и ForwardFeeder по потокам (в зависимости от их количества)
 
-	void ErrorCounter(int LayerNumber, int start, int stop, double prediction, double rresult); // TO DO
+	void ErrorCounter(int LayerNumber, int start, int stop, double rresult);
 
 	void WeightUpdater(int start, int stop, int LayerNum, double lr);
 

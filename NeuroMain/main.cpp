@@ -50,6 +50,7 @@ int main()
 	std::ios_base::sync_with_stdio(false);
 
 	std::string to_start_education;
+	int threadNum;
 	const int layer = 4;
 	const int imputLayer = 4096;
 	std::vector<int> size = { imputLayer , 64, 32, 26 };
@@ -61,11 +62,15 @@ int main()
 
 	} while (!(to_start_education == "Y" || to_start_education == "N"));
 
-
+	do
+	{
+		std::cout << "Укажите желаемое число потоков (1/2/4):  ";
+		cin >> threadNum;
+	} while (!(threadNum == 1 || threadNum == 2 || threadNum == 4));
 
 	if (to_start_education == "Y")
 	{
-		NetWork neuro(size, 1);
+		NetWork neuro(size, threadNum);
 
 		std::cout << "Укажите желаемое имя файла с весами:  \n";
 		std::string safeFileName;
@@ -83,7 +88,7 @@ int main()
 		std::cout << "Укажите название Вашего файла с весами(Например: weights_Final):  \n";
 		cin >> weightsName;
 
-		NetWork neuro(size, 1, weightsName);
+		NetWork neuro(size, threadNum, weightsName);
 
 		doTest(neuro);
 		doSave(neuro);

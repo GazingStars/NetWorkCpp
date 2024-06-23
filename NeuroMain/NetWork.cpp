@@ -425,9 +425,6 @@ void NetWork::ForwardFeeder(int LayersNumber, int start, int stop)
 
 double NetWork::ForwardFeed()
 {
-
-	setlocale(LC_ALL, "Ru");
-
 	for (int i = 1; i < layers; i++)
 	{
 		if (threadsNum == 1)
@@ -441,7 +438,7 @@ double NetWork::ForwardFeed()
 		}
 		if (threadsNum == 2)
 		{
-			//cout << "Выполняю очистку двумя ядрами";
+			//Выполняю очистку двумя
 			thread th1([&]() {
 				LayersCleaner(i, 0, int(floor(size[i] / 2)));
 				});
@@ -451,14 +448,12 @@ double NetWork::ForwardFeed()
 				});
 			th1.join();
 			th2.join();
-
 		}
 
 		if (threadsNum == 4)
 		{
 			if (size[i] == 1)
 			{
-				cout << "Выполняю очистку одним ядром";
 				thread th1([&]() {
 					LayersCleaner(i, 0, size[i]);
 					});
@@ -467,7 +462,6 @@ double NetWork::ForwardFeed()
 
 			if (size[i] == 2 || size[i] == 3)
 			{
-				cout << "Выполняю очистку двумя ядрами";
 				thread th1([&]() {
 					LayersCleaner(i, 0, int(floor(size[i] / 2)));
 					});
@@ -499,16 +493,14 @@ double NetWork::ForwardFeed()
 
 		if (threadsNum == 1)
 		{
-
 			thread th1([&]() {
 				ForwardFeeder(i, 0, size[i]);
 				});
 			th1.join();
-
 		}
+
 		if (threadsNum == 2)
 		{
-
 			thread th1([&]() {
 				ForwardFeeder(i, 0, int(floor(size[i] / 2)));
 				});
@@ -518,14 +510,12 @@ double NetWork::ForwardFeed()
 				});
 			th1.join();
 			th2.join();
-
 		}
 
 		if (threadsNum == 4)
 		{
 			if (size[i] == 1)
 			{
-				cout << "Выполняю очистку одним ядром";
 				thread th1([&]() {
 					ForwardFeeder(i, 0, size[i]);
 					});
@@ -534,7 +524,6 @@ double NetWork::ForwardFeed()
 
 			if (size[i] == 2 || size[i] == 3)
 			{
-				cout << "Выполняю очистку двумя ядрами";
 				thread th1([&]() {
 					ForwardFeeder(i, 0, int(floor(size[i] / 2)));
 					});
@@ -563,7 +552,6 @@ double NetWork::ForwardFeed()
 				th4.join();
 			}
 		}
-
 	}
 
 	double max = 0;
@@ -579,7 +567,7 @@ double NetWork::ForwardFeed()
 	return predicton;
 }
 
-void NetWork::ErrorCounter(int LayerNumber, int start, int stop, double prediction, double rresult)
+void NetWork::ErrorCounter(int LayerNumber, int start, int stop, double rresult)
 {
 
 	if (LayerNumber == layers - 1)
@@ -587,14 +575,9 @@ void NetWork::ErrorCounter(int LayerNumber, int start, int stop, double predicti
 		for (int j = start; j < stop; j++)
 		{
 			if (j != int(rresult))
-			{
 				neurons[LayerNumber][j].error = -(neurons[LayerNumber][j].value);
-			}
 			else
-			{
-				neurons[LayerNumber][j].error = 1.0 - neurons[LayerNumber][j].value;
-			}
-
+				neurons[LayerNumber][j].error = 1.0 - neurons[LayerNumber][j].value; // На самом деле не совсем ошибка, а производная реальной ошибки (представляющей собой квадрат разности)
 		}
 	}
 	else
@@ -603,9 +586,8 @@ void NetWork::ErrorCounter(int LayerNumber, int start, int stop, double predicti
 		{
 			double error = 0.0;
 			for (int k = 0; k < size[LayerNumber + 1]; k++)
-			{
 				error += neurons[LayerNumber + 1][k].error * weight[LayerNumber][j][k];
-			}
+
 			neurons[LayerNumber][j].error = error;
 		}
 	}
@@ -616,17 +598,8 @@ void NetWork::WeightUpdater(int start, int stop, int LayerNum, double lr)
 	int i = LayerNum;
 
 	for (int j = start; j < stop; j++)
-	{
 		for (int k = 0; k < size[i + 1]; k++)
-		{
-			//std::cout << k << "\nВес до: " << weight[i][j][k] << "\n";
-
 			weight[i][j][k] += lr * neurons[i + 1][k].error * sigm_pro(neurons[i + 1][k].value) * neurons[i][j].value;
-
-			//std::cout << k << "\nВес после: " << weight[i][j][k] << "\n";
-			// TO DO
-		}
-	}
 }
 
 void NetWork::BackPropogation(double prediction, double rresult, double Ir)
@@ -635,43 +608,19 @@ void NetWork::BackPropogation(double prediction, double rresult, double Ir)
 	{
 		if (threadsNum == 1)
 		{
-			if (i == layers - 1)
-			{
-				for (int j = 0; j < size[i]; j++)
-				{
-					if (j != int(rresult))
-					{
-						neurons[i][j].error = -(neurons[i][j].value);
-					}
-					else
-					{
-						neurons[i][j].error = 1.0 - neurons[i][j].value;
-					}
-				}
-
-			}
-			else
-			{
-				for (int j = 0; j < size[i]; j++)
-				{
-					double error = 0.0;
-					for (int k = 0; k < size[i + 1]; k++)
-					{
-						error += neurons[i + 1][k].error * weight[i][j][k];
-					}
-					neurons[i][j].error = error;
-
-				}
-			}
+			thread th1([&]() {
+				ErrorCounter(i, 0, size[i], rresult);
+				});
+			th1.join();
 		}
 		if (threadsNum == 2)
 		{
 			thread th1([&]() {
-				ErrorCounter(i, 0, int(size[i] / 2), prediction, rresult);
+				ErrorCounter(i, 0, int(size[i] / 2), rresult);
 				});
 
 			thread th2([&]() {
-				ErrorCounter(i, int(size[i] / 2), size[i], prediction, rresult);
+				ErrorCounter(i, int(size[i] / 2), size[i], rresult);
 				});
 			th1.join();
 			th2.join();
@@ -686,13 +635,9 @@ void NetWork::BackPropogation(double prediction, double rresult, double Ir)
 					for (int j = 0; j < size[i]; j++)
 					{
 						if (j != int(rresult))
-						{
 							neurons[i][j].error = -(neurons[i][j].value);
-						}
 						else
-						{
 							neurons[i][j].error = 1.0 - neurons[i][j].value;
-						}
 					}
 				}
 				else
@@ -701,11 +646,8 @@ void NetWork::BackPropogation(double prediction, double rresult, double Ir)
 					{
 						double error = 0.0;
 						for (int k = 0; k < size[i + 1]; k++)
-						{
 							error += neurons[i + 1][k].error * weight[i][j][k];
-						}
 						neurons[i][j].error = error;
-
 					}
 				}
 			}
@@ -717,18 +659,17 @@ void NetWork::BackPropogation(double prediction, double rresult, double Ir)
 				int start4 = int(size[i] - floor(size[i] / 4)); int stop4 = size[i];
 
 				thread th1([&]() {
-					ErrorCounter(i, start1, stop1, prediction, rresult);
+					ErrorCounter(i, start1, stop1, rresult);
 					});
 				thread th2([&]() {
-					ErrorCounter(i, start2, stop2, prediction, rresult);
+					ErrorCounter(i, start2, stop2, rresult);
 					});
 				thread th3([&]() {
-					ErrorCounter(i, start3, stop3, prediction, rresult);
+					ErrorCounter(i, start3, stop3, rresult);
 					});
 				thread th4([&]() {
-					ErrorCounter(i, start4, stop4, prediction, rresult);
+					ErrorCounter(i, start4, stop4, rresult);
 					});
-
 
 				th1.join();
 				th2.join();
@@ -741,18 +682,11 @@ void NetWork::BackPropogation(double prediction, double rresult, double Ir)
 	{
 		if (threadsNum == 1)
 		{
-			for (int j = 0; j < size[i]; j++)
-			{
-				for (int k = 0; k < size[i + 1]; k++)
-				{
-					//std::cout << k << "\nВес до: " << weight[i][j][k] << "\n";
+			thread th1([&]() {
+				WeightUpdater(0, int(size[i]), i, Ir);
+				});
 
-					weight[i][j][k] += Ir * neurons[i + 1][k].error * sigm_pro(neurons[i + 1][k].value) * neurons[i][j].value;
-
-					//std::cout << k << "\nВес после: " << weight[i][j][k] << "\n";
-					//weight[i][j][k] += Ir * neurons[i + 1][k].error * sigm_pro(neurons[i + 1][k].value) * neurons[i][j].value;
-				}
-			}
+			th1.join();
 		}
 		if (threadsNum == 2)
 		{
@@ -766,23 +700,33 @@ void NetWork::BackPropogation(double prediction, double rresult, double Ir)
 
 			th1.join();
 			th2.join();
-
 		}
 		if (threadsNum == 4)
 		{
-			if (size[i] < 4)
-			{
-				for (int j = 0; j < size[i]; j++)
-				{
-					for (int k = 0; k < size[i + 1]; k++)
-					{
-						weight[i][j][k] += Ir * neurons[i + 1][k].error * sigm_pro(neurons[i + 1][k].value) * neurons[i][j].value;
-					}
-				}
-			}
+			int start1 = 0; int stop1 = int(size[i] / 4);
+			int start2 = int(size[i] / 4); int stop2 = int(size[i] / 2);
+			int start3 = int(size[i] / 2); int stop3 = int(size[i] - floor(size[i] / 4));
+			int start4 = int(size[i] - floor(size[i] / 4)); int stop4 = size[i];
+
+			thread th1([&]() {
+				WeightUpdater(start1, stop1, i, Ir);
+				});
+			thread th2([&]() {
+				WeightUpdater(start2, stop2, i, Ir);
+				});
+			thread th3([&]() {
+				WeightUpdater(start3, stop3, i, Ir);
+				});
+			thread th4([&]() {
+				WeightUpdater(start4, stop4, i, Ir);
+				});
+
+			th1.join();
+			th2.join();
+			th3.join();
+			th4.join();
 		}
 	}
-
 }
 
 bool NetWork::SafeWeights(const std::string& SafeFaleName)
@@ -792,30 +736,12 @@ bool NetWork::SafeWeights(const std::string& SafeFaleName)
 	if (fout.is_open())
 	{
 		for (int i = 0; i < layers; i++)
-		{
 			if (i < layers - 1)
-			{
 				for (int j = 0; j < size[i]; j++)
-				{
 					for (int k = 0; k < size[i + 1]; k++)
-					{
 						fout << weight[i][j][k] << " ";
-					}
-				}
-			}
-		}
 		fout.close();
 		return 1;
 	}
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
