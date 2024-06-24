@@ -1,4 +1,8 @@
 #pragma once
+#include "ActivationFunction.h"
+#include "SigmoidActivation.h"
+#include "ReLUActivation.h"
+#include "Tangent.h"
 #include <iostream>
 #include <time.h>
 #include <random>
@@ -31,12 +35,9 @@ protected:
 	{
 		double value;
 		double error;
-
+		ActivationFunctions* activationFunction;
 		// возвращает значение сигмоидальной функции //numeric посмотреть - нет
-		void act()
-		{
-			value = (1.0 / (1.0 + std::exp(-value)));
-		}
+		void act(ActivationFunctions* activationFunction) { value = activationFunction->activate(value); }
 	};
 
 	int layers;		// Хранилище количества слоев 
@@ -45,6 +46,8 @@ protected:
 	bool HaveData;
 	int* size;		// Хранилище количества нейронов, где size[i] количество нейронов на i-м слое 
 	int threadsNum;
+	ActivationFunctions* activationFunction;
+	SigmoidActivation sigm;
 
 public:
 	NetWork(const int layers, int* size, const int threadsNum, const std::string& FILE = "");
@@ -56,16 +59,18 @@ public:
 	NetWork(NetWork& another) = delete;
 
 	~NetWork();
-	
+
+	void setActivationFunction(ActivationFunctions* func) { activationFunction = func; }
+
 	double getRandom() const;
-	
+
 	NetWork& operator=(const NetWork& another) = delete;
 
 	bool haveData() const { return HaveData; }
 
 	void ReadFromFile(const std::string& filename);
 
-	void Educate(const int DataAmmount,const std::string& FileEducateData,const std::string& SafeFaleName);
+	void Educate(const int DataAmmount, const std::string& FileEducateData, const std::string& SafeFaleName);
 
 	void Test(const std::string& FileTestData);
 

@@ -26,6 +26,7 @@ NetWork::NetWork(const int layers, int* size, const int threadsNum, const std::s
 				}
 			}
 		}
+		activationFunction = &sigm;
 		std::cout << "\nВсе начальные настройки установлены, но Вам нужно произвести обучение (Educate).\n";
 	}
 	else
@@ -41,6 +42,7 @@ NetWork::NetWork(const int layers, int* size, const int threadsNum, const std::s
 			neurons[i] = new neuron[size[i]];
 		}
 		ReadFromFile(FILE);
+		activationFunction = &sigm;
 	}
 }
 
@@ -74,7 +76,8 @@ NetWork::NetWork(std::initializer_list<int> iL, const int threadsNum, const std:
 				}
 			}
 		}
-		std::cout << "\nВсе начальные настройки установлены, но Вам нужно произвести обучение (Educate).\n";
+		activationFunction = &sigm;
+		std::cout << "\nВсе начальные настройки установлены, но Вам нужно произвести обучение (Educate).\n";	
 	}
 	else
 	{
@@ -90,6 +93,7 @@ NetWork::NetWork(std::initializer_list<int> iL, const int threadsNum, const std:
 			neurons[i] = new neuron[size[i]];
 		}
 		ReadFromFile(FILE);
+		activationFunction = &sigm;
 	}
 }
 
@@ -119,6 +123,7 @@ NetWork::NetWork(std::vector<int>& vica, const int threadsNum, const std::string
 				}
 			}
 		}
+		activationFunction = &sigm;
 		std::cout << "\nВсе начальные настройки установлены, но Вам нужно произвести обучение (Educate).\n";
 	}
 	else
@@ -134,6 +139,7 @@ NetWork::NetWork(std::vector<int>& vica, const int threadsNum, const std::string
 			this->size[i] = vica[i];
 			neurons[i] = new neuron[size[i]];
 		}
+		activationFunction = &sigm;
 		ReadFromFile(FILE);
 	}
 }
@@ -419,7 +425,7 @@ void NetWork::ForwardFeeder(int LayersNumber, int start, int stop)
 	{
 		for (int j = 0; j < size[LayersNumber - 1]; j++) // Идет по нейронам предыдущего слоя
 			neurons[LayersNumber][i].value += neurons[LayersNumber - 1][j].value * weight[LayersNumber - 1][j][i];
-		neurons[LayersNumber][i].act();
+		neurons[LayersNumber][i].act(activationFunction);
 	}
 }
 
@@ -599,7 +605,7 @@ void NetWork::WeightUpdater(int start, int stop, int LayerNum, double lr)
 
 	for (int j = start; j < stop; j++)
 		for (int k = 0; k < size[i + 1]; k++)
-			weight[i][j][k] += lr * neurons[i + 1][k].error * sigm_pro(neurons[i + 1][k].value) * neurons[i][j].value;
+			weight[i][j][k] += lr * neurons[i + 1][k].error * activationFunction->derivative(neurons[i + 1][k].value) * neurons[i][j].value;
 }
 
 void NetWork::BackPropogation(double prediction, double rresult, double Ir)
