@@ -17,6 +17,5 @@ public:
 		double sigmoid = activate(x);
 		return sigmoid * (1 - sigmoid);
 	}
-
 };
 

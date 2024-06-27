@@ -38,9 +38,8 @@ void doSave(const NetWork& neuro)
 	} while (!(safeFile == "Y" || safeFile == "N"));
 }
 
-void doFA(NetWork& neuro)
+void doFA(NetWork& neuro, int& activationFunction)
 {
-	int activationFunction;
 	do
 	{
 		std::cout << "”кажите желаемую функцию активации:\n1. Sigmoid\n2. ReLU\n3. Tangent\n:";
@@ -74,7 +73,7 @@ int main()
 
 	std::string to_start_education;
 	int threadNum;
-	int activationFunction;
+	int activationFunction = 1;
 	const int layer = 4;
 	const int imputLayer = 4096;
 	std::vector<int> size = { imputLayer , 64, 32, 26 };
@@ -107,14 +106,14 @@ int main()
 	{
 		NetWork neuro(size, threadNum);
 
-		doFA(neuro);
+		doFA(neuro, activationFunction);
 
 		std::cout << "”кажите желаемое им€ файла с весами:  \n";
 		std::string safeFileName;
 		cin >> safeFileName;
 
 		const int n = 52; // Ammount of peactures
-		neuro.Educate(n, "lib.txt", safeFileName);
+		neuro.Educate(n, "lib.txt", safeFileName, activationFunction);
 
 		doTest(neuro);
 		doSave(neuro);
@@ -127,7 +126,7 @@ int main()
 
 		NetWork neuro(size, threadNum, weightsName);
 
-		doFA(neuro);
+		doFA(neuro, activationFunction);
 		doTest(neuro);
 		doSave(neuro);
 	}

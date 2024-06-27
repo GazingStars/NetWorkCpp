@@ -19,14 +19,6 @@ using std::endl;
 using std::cin;
 using std::vector;
 
-//TODO
-// 1. Random [done!]
-// 2. Menu [done! ]
-// 3. Numeric sigm [is not possible to do another way]
-// 4. Strategy 
-// 5. Bridge Logger 
-// 6. Clean code [done!]
-
 class NetWork
 {
 protected:
@@ -36,12 +28,12 @@ protected:
 		double value;
 		double error;
 		ActivationFunctions* activationFunction;
-		// возвращает значение сигмоидальной функции //numeric посмотреть - нет
+		// Функция активации 
 		void act(ActivationFunctions* activationFunction) { value = activationFunction->activate(value); }
 	};
 
 	int layers;		// Хранилище количества слоев 
-	neuron** neurons;
+	neuron** neurons; // Двумерный массив нейронов, где neurons[i] представляет массив нейронов в i-м слое.
 	double*** weight;
 	bool HaveData;
 	int* size;		// Хранилище количества нейронов, где size[i] количество нейронов на i-м слое 
@@ -70,7 +62,7 @@ public:
 
 	void ReadFromFile(const std::string& filename);
 
-	void Educate(const int DataAmmount, const std::string& FileEducateData, const std::string& SafeFaleName);
+	void Educate(const int DataAmmount, const std::string& FileEducateData, const std::string& SafeFaleName, const int activationFunction);
 
 	void Test(const std::string& FileTestData);
 

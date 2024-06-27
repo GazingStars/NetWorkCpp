@@ -77,7 +77,7 @@ NetWork::NetWork(std::initializer_list<int> iL, const int threadsNum, const std:
 			}
 		}
 		activationFunction = &sigm;
-		std::cout << "\nВсе начальные настройки установлены, но Вам нужно произвести обучение (Educate).\n";	
+		std::cout << "\nВсе начальные настройки установлены, но Вам нужно произвести обучение (Educate).\n";
 	}
 	else
 	{
@@ -205,7 +205,7 @@ void NetWork::ReadFromFile(const std::string& filename)
 
 }
 
-void NetWork::Educate(const int DataAmmount, const std::string& FileEducateData, const std::string& SafeFaleName)
+void NetWork::Educate(const int DataAmmount, const std::string& FileEducateData, const std::string& SafeFaleName, const int activationFunction)
 {
 	ifstream fin;
 	ofstream fout;
@@ -246,8 +246,12 @@ void NetWork::Educate(const int DataAmmount, const std::string& FileEducateData,
 						cout << "Угадал " << char(rresult + 65) << "\t\t\t****" << endl;
 						ra++;
 					}
-					else
+					else if (activationFunction == 1)
 						BackPropogation(result, rresult, 0.3);
+					else if (activationFunction == 2)
+						BackPropogation(result, rresult, 0.00001);
+					else if (activationFunction == 3)
+						BackPropogation(result, rresult, 0.001);
 				}
 				fin.close();
 			}
@@ -583,7 +587,7 @@ void NetWork::ErrorCounter(int LayerNumber, int start, int stop, double rresult)
 			if (j != int(rresult))
 				neurons[LayerNumber][j].error = -(neurons[LayerNumber][j].value);
 			else
-				neurons[LayerNumber][j].error = 1.0 - neurons[LayerNumber][j].value; // На самом деле не совсем ошибка, а производная реальной ошибки (представляющей собой квадрат разности)
+				neurons[LayerNumber][j].error = 1.0 - neurons[LayerNumber][j].value;
 		}
 	}
 	else
